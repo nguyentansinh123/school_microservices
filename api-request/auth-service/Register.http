@@ -1,0 +1,14 @@
+### Login Request to retrieve a token
+POST http://localhost:4000/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Ali",
+  "lastName": "Bouali",
+  "email": "ali@mail.com",
+  "password": "pAssword1!_",
+  "cofirmPassword": "pAssword1!_",
+  "phoneNumber": "+4912389765634"
+}
+
+> {% client.global.set("token", response.body.token) %}
