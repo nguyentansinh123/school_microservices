@@ -2,6 +2,7 @@ package com.caffein.authservice.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -90,19 +91,37 @@ public class User implements UserDetails{
     @Column(name = "LAST_MODIFIED_DATE", insertable = false)
     private LocalDateTime lastModifiedDate;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = { CascadeType.MERGE }, fetch = FetchType.EAGER)
     @JoinTable(name = "USERS_ROLES",
             joinColumns = { @JoinColumn(name = "USER_ID") },
             inverseJoinColumns = {@JoinColumn(name="ROLE_ID")})
     private List<Role> roles;
 
+    @ManyToMany(cascade = { CascadeType.MERGE }, fetch = FetchType.EAGER)
+    @JoinTable(name = "USERS_PERMISSIONS",
+            joinColumns = @JoinColumn(name = "USER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "PERMISSION_ID"))
+    private List<Permission> permissions;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(CollectionUtils.isEmpty(this.roles)){
-            return List.of();
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(this.roles)) {
+            this.roles.forEach(role -> {
+                authorities.add(new SimpleGrantedAuthority(role.getName()));
+                if (!CollectionUtils.isEmpty(role.getPermissions())) {
+                    role.getPermissions()
+                            .forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission.getName())));
+                }
+            });
         }
 
-        return this.roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).toList();
+        if (!CollectionUtils.isEmpty(this.permissions)) {
+            this.permissions.forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission.getName())));
+        }
+
+        return authorities;
     }
 
     @Override

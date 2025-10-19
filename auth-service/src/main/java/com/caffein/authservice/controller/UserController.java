@@ -2,9 +2,13 @@ package com.caffein.authservice.controller;
 
 
 import com.caffein.authservice.model.User;
+import com.caffein.authservice.request.roleRequest.UserRoleUpdateRequest;
 import com.caffein.authservice.request.userRequest.ChangePasswordRequest;
 import com.caffein.authservice.request.userRequest.ProfileUpdateRequest;
+import com.caffein.authservice.request.userRequest.UserPermissionUpdateRequest;
 import com.caffein.authservice.service.user.UserService;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -50,13 +54,27 @@ public class UserController {
 
     @DeleteMapping("/me")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('user:delete')")
     public void deleteUser(final Authentication principal){
         this.userService.deleteAccount(getUserId(principal));
     }
 
+    @PutMapping("/{userId}/roles")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('admin:write')")
+    public void updateUserRoles(@PathVariable String userId, @RequestBody @Valid UserRoleUpdateRequest request) {
+        userService.updateUserRoles(userId, request);
+    }
+
+    @PutMapping("/{userId}/permissions")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('admin:write')")
+    public void updateUserPermissions(@PathVariable String userId, @RequestBody @Valid UserPermissionUpdateRequest request) {
+        userService.updateUserPermissions(userId, request);
+    }
+
     private String getUserId(final Authentication principal){
         return ((User) principal.getPrincipal()).getId();
-
     }
 
 }

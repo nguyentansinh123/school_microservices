@@ -10,5 +10,3 @@ Content-Type: application/json
   "cofirmPassword": "pAssword1!_",
   "phoneNumber": "+4912389765634"
 }
-
-> {% client.global.set("token", response.body.token) %}

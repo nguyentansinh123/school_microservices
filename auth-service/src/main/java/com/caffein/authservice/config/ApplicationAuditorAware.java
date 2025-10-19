@@ -14,7 +14,7 @@ public class ApplicationAuditorAware implements AuditorAware<String> {
     public Optional<String> getCurrentAuditor() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
-            return Optional.empty();
+            return Optional.of("system");
         }
         final User user = (User) authentication.getPrincipal();
         return Optional.ofNullable(user.getId());
