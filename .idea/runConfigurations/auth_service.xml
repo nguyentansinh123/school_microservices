@@ -35,6 +35,10 @@
               <option name="value" value="create-drop" />
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
+              <option name="name" value="SPRING_KAFKA_BOOTSTRAP_SERVERS" />
+              <option name="value" value="kafka:9092" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
               <option name="name" value="SPRING_SQL_INIT_MODE" />
               <option name="value" value="always" />
             </DockerEnvVarImpl>

@@ -1,5 +1,6 @@
 package com.caffein.authservice.controller;
 
+import com.caffein.authservice.kafka.producer.UserProducer;
 import com.caffein.authservice.request.authRequest.AuthenticationRequest;
 import com.caffein.authservice.request.authRequest.RefreshRequest;
 import com.caffein.authservice.request.authRequest.RegistrationRequest;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private final AuthenticationService service;
+    private final UserProducer userProducer;
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(
@@ -32,13 +34,10 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(
-            @Valid
-            @RequestBody
-            final RegistrationRequest request) {
+    public ResponseEntity<Void> register(@Valid @RequestBody final RegistrationRequest request) {
         this.service.register(request);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .build();
+        userProducer.authToStudentTopic("pushUserFromAuthServiceToStudentServiceTopic", request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/refresh")

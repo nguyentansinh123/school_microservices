@@ -58,8 +58,8 @@ public class AuthServiceApplication {
                         .firstName("Admin")
                         .lastName("User")
                         .email("admin@mail.com")
-                        .password(passwordEncoder.encode("password")) // Default password
-                        .phoneNumber("+10000000000") // Dummy phone number
+                        .password(passwordEncoder.encode("password"))
+                        .phoneNumber("+10000000000")
                         .roles(List.of(adminRole))
                         .enabled(true)
                         .emailVerified(true)

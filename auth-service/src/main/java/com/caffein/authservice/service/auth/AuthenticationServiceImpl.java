@@ -3,6 +3,7 @@ package com.caffein.authservice.service.auth;
 
 import com.caffein.authservice.config.jwtConfig.JwtService;
 import com.caffein.authservice.exception.BusinessException;
+import com.caffein.authservice.kafka.producer.UserProducer;
 import com.caffein.authservice.model.Role;
 import com.caffein.authservice.model.User;
 import com.caffein.authservice.repository.RoleRepository;
