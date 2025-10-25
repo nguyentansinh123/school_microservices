@@ -43,7 +43,7 @@ public class AuthServiceApplication {
 
             Role adminRole = roleRepository.findByName("ROLE_ADMIN").orElseGet(() -> roleRepository.save(Role.builder().name("ROLE_ADMIN").build()));
             if (CollectionUtils.isEmpty(adminRole.getPermissions())) {
-                adminRole.setPermissions(List.of(adminRead, adminWrite, userDelete, gradesView));
+                adminRole.setPermissions(new ArrayList<>(permissionRepository.findAll()));
                 roleRepository.save(adminRole);
             }
 

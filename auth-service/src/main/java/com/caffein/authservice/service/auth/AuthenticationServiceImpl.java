@@ -60,7 +60,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     @Transactional
-    public void register(RegistrationRequest request) {
+    public User register(RegistrationRequest request) {
         checkUserEmail(request.getEmail());
         checkUserPhoneNumber(request.getPhoneNumber());
         checkPasswords(request.getPassword(), request.getCofirmPassword());
@@ -72,13 +72,40 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         final User user = this.userMapper.toUser(request);
         user.setRoles(roles);
         log.debug("Saving user {}", user);
-        this.userRepository.save(user);
+        User savedUser = this.userRepository.save(user);
 
         final List<User> users = new ArrayList<>();
         users.add(user);
         userRole.setUsers(users);
 
         this.roleRepository.save(userRole);
+
+        return savedUser;
+    }
+
+    @Override
+    @Transactional
+    public User registerANewStudent(RegistrationRequest request) {
+        checkUserEmail(request.getEmail());
+        checkUserPhoneNumber(request.getPhoneNumber());
+        checkPasswords(request.getPassword(), request.getCofirmPassword());
+
+        final Role userRole = this.roleRepository.findByName("ROLE_STUDENT")
+                .orElseThrow(() -> new EntityNotFoundException("Role user does not exist"));
+        final List<Role> roles = new ArrayList<>();
+        roles.add(userRole);
+        final User user = this.userMapper.toUser(request);
+        user.setRoles(roles);
+        log.debug("Saving user {}", user);
+        User savedUser = this.userRepository.save(user);
+
+        final List<User> users = new ArrayList<>();
+        users.add(user);
+        userRole.setUsers(users);
+
+        this.roleRepository.save(userRole);
+
+        return savedUser;
     }
 
     @Override

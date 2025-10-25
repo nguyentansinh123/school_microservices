@@ -1,6 +1,7 @@
 package com.caffein.authservice.controller;
 
 import com.caffein.authservice.kafka.producer.UserProducer;
+import com.caffein.authservice.model.User;
 import com.caffein.authservice.request.authRequest.AuthenticationRequest;
 import com.caffein.authservice.request.authRequest.RefreshRequest;
 import com.caffein.authservice.request.authRequest.RegistrationRequest;
@@ -11,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,8 +37,16 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@Valid @RequestBody final RegistrationRequest request) {
-        this.service.register(request);
-        userProducer.authToStudentTopic("pushUserFromAuthServiceToStudentServiceTopic", request);
+        User user = this.service.register(request);
+        userProducer.authToStudentTopic("pushUserFromAuthServiceToStudentServiceTopic", user);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/admin/register-student")
+    @PreAuthorize("hasAuthority('admin:write')")
+    public ResponseEntity<Void> registerStudent(@Valid @RequestBody final RegistrationRequest request) {
+        User user = this.service.registerANewStudent(request);
+        userProducer.authToStudentTopic("pushUserFromAuthServiceToStudentServiceTopic", user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

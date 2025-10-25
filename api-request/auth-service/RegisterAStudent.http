@@ -1,5 +1,5 @@
 ### Login Request to retrieve a token
-POST http://localhost:4000/api/v1/auth/register
+POST http://localhost:4000/api/v1/auth/admin/register-student
 Content-Type: application/json
 
 {

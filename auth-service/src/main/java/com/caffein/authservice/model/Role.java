@@ -1,6 +1,7 @@
 package com.caffein.authservice.model;
 
 import com.caffein.authservice.common.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -23,6 +24,7 @@ public class Role extends BaseEntity {
     private String name;
 
     @ManyToMany(mappedBy = "roles")
+    @JsonIgnore
     private List<User> users;
 
     @ManyToMany(fetch = FetchType.EAGER)

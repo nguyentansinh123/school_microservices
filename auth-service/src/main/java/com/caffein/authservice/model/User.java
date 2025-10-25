@@ -42,7 +42,6 @@ import lombok.Setter;
 @Table(name = "USERS")
 @EntityListeners(AuditingEntityListener.class)
 public class User implements UserDetails{
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
