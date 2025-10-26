@@ -31,17 +31,20 @@ public class Enrollment {
     @Column(name = "course_id", nullable = false)
     private UUID courseId;
 
-    @Column(name = "teacher_id")
-    private UUID teacherId;
+    @Column(name = "course_code")
+    private String courseCode;
+
+    @Column(name = "course_name")
+    private String courseName;
 
     @Column(name = "academic_year")
-    private String academicYear; // e.g., '2024-2025'
+    private String academicYear;
 
     @Column(name = "semester")
-    private String semester; // e.g., 'Fall', 'Spring'
+    private String semester;
 
     @Column(name = "grade")
-    private String grade; // e.g., 'A', '85%'
+    private String grade;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
