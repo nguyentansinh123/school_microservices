@@ -15,7 +15,10 @@ spring:
                 - Path=/auth/**, /student/**, /users/**
               filters:
                 - RewritePath=/(?<segment>.*), /api/v1/$\{segment}
+
             - id: student-service
               uri: ${STUDENT_SERVICE_URL:http://localhost:4001}
               predicates:
                 - Path=/api/v1/ss/**
+              filters:
+                - JwtValidation
