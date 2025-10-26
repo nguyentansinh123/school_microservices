@@ -6,10 +6,16 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      routes:
-        - id: auth-service
-          uri: ${AUTH_SERVICE_URL:http://localhost:4000}
-          predicates:
-            - Path=/auth/**
-          filters:
-            - PrefixPath=/api/v1
+      server:
+        webflux:
+          routes:
+            - id: auth-service
+              uri: ${AUTH_SERVICE_URL:http://localhost:4000}
+              predicates:
+                - Path=/auth/**, /student/**, /users/**
+              filters:
+                - RewritePath=/(?<segment>.*), /api/v1/$\{segment}
+            - id: student-service
+              uri: ${STUDENT_SERVICE_URL:http://localhost:4001}
+              predicates:
+                - Path=/api/v1/ss/**
