@@ -12,11 +12,11 @@
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
               <option name="name" value="SPRING_DATASOURCE_URL" />
-              <option name="value" value="jdbc:postgresql://student-service-db:5432/db2" />
+              <option name="value" value="jdbc:postgresql://student-service-db:5432/thestudentdb" />
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
               <option name="name" value="SPRING_DATASOURCE_USERNAME" />
-              <option name="value" value="admin_user2" />
+              <option name="value" value="admin_user" />
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
               <option name="name" value="SPRING_JPA_HIBERNATE_DDL_AUTO" />
