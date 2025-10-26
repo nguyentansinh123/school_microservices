@@ -10,6 +10,10 @@
               <option name="name" value="AUTH_SERVICE_URL" />
               <option name="value" value="http://auth-service:8080" />
             </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="STUDENT_SERVICE_URL" />
+              <option name="value" value="http://student-service:8080" />
+            </DockerEnvVarImpl>
           </list>
         </option>
         <option name="portBindings">
