@@ -1,0 +1,2 @@
+### Login Request to retrieve a token
+GET http://localhost:4001/api/v1/students?search=albnzxczx2@mail.com
