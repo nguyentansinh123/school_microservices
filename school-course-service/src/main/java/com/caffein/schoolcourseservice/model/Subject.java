@@ -6,7 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,4 +33,8 @@ public class Subject {
     @ManyToMany(mappedBy = "subjects")
     @Builder.Default
     private Set<Teacher> teachers = new HashSet<>();
+
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Schedule> schedules = new ArrayList<>();
 }

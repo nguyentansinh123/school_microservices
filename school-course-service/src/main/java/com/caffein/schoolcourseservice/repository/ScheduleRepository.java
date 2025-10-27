@@ -10,7 +10,9 @@ import java.util.UUID;
 
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
-    List<Schedule> findByCourseId(UUID courseId);
+    List<Schedule> findBySubjectId(UUID subjectId);
     List<Schedule> findByDayOfWeek(DayOfWeek dayOfWeek);
-    List<Schedule> findByCourseIdAndDayOfWeek(UUID courseId, DayOfWeek dayOfWeek);
+    List<Schedule> findBySubjectIdAndDayOfWeek(UUID subjectId, DayOfWeek dayOfWeek);
+    List<Schedule> findByAcademicYearAndSemester(String academicYear, String semester);
+    List<Schedule> findBySubjectIdAndAcademicYearAndSemester(UUID subjectId, String academicYear, String semester);
 }
