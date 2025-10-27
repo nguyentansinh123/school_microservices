@@ -109,6 +109,31 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    @Transactional
+    public User registerANewTeacher(RegistrationRequest request) {
+        checkUserEmail(request.getEmail());
+        checkUserPhoneNumber(request.getPhoneNumber());
+        checkPasswords(request.getPassword(), request.getCofirmPassword());
+
+        final Role userRole = this.roleRepository.findByName("ROLE_TEACHER")
+                .orElseThrow(() -> new EntityNotFoundException("Role user does not exist"));
+        final List<Role> roles = new ArrayList<>();
+        roles.add(userRole);
+        final User user = this.userMapper.toUser(request);
+        user.setRoles(roles);
+        log.debug("Saving user {}", user);
+        User savedUser = this.userRepository.save(user);
+
+        final List<User> users = new ArrayList<>();
+        users.add(user);
+        userRole.setUsers(users);
+
+        this.roleRepository.save(userRole);
+
+        return savedUser;
+    }
+
+    @Override
     public AuthenticationResponse refreshToken(RefreshRequest request) {
         final String newAccessToken = this.jwtService.refreshAccessToken(request.getRefreshToken());
         final String tokenType = "Bearer";

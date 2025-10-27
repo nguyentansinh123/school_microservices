@@ -47,6 +47,13 @@ public class AuthServiceApplication {
                 roleRepository.save(adminRole);
             }
 
+            Role teacherRole = roleRepository.findByName("ROLE_TEACHER").orElseGet(() -> roleRepository.save(Role.builder().name("ROLE_TEACHER").build()));
+            if (CollectionUtils.isEmpty(teacherRole.getPermissions())) {
+                List<Permission> teacherPermissions = new ArrayList<>(List.of(userRead, userWrite, gradesView));
+                teacherRole.setPermissions(teacherPermissions);
+                roleRepository.save(teacherRole);
+            }
+
             Role studentRole = roleRepository.findByName("ROLE_STUDENT").orElseGet(() -> roleRepository.save(Role.builder().name("ROLE_STUDENT").build()));
             if (CollectionUtils.isEmpty(studentRole.getPermissions())) {
                 List<Permission> studentPermissions = new ArrayList<>(List.of(userRead, userWrite, gradesView));

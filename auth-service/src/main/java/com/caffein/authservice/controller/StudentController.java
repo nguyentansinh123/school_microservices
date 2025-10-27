@@ -24,10 +24,10 @@ public class StudentController {
     private final AuthenticationService service;
     private final UserProducer userProducer;
 
-    @PostMapping("/admin/register-student")
+    @PostMapping("/admin/register-teacher")
     @PreAuthorize("hasAuthority('admin:write')")
     public ResponseEntity<Void> registerStudent(@Valid @RequestBody final RegistrationRequest request) {
-        User user = this.service.registerANewStudent(request);
+        User user = this.service.registerANewTeacher(request);
         userProducer.authToStudentTopic("pushUserFromAuthServiceToStudentServiceTopic", user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

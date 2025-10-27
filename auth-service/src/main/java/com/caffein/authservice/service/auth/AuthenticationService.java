@@ -14,6 +14,7 @@ public interface AuthenticationService {
 
     User registerANewStudent(RegistrationRequest request);
 
+    User registerANewTeacher(RegistrationRequest request);
 
     AuthenticationResponse refreshToken(RefreshRequest request);
 
