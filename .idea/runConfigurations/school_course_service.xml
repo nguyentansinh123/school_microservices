@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="courses-service/Dockerfile: Compose Deployment" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+  <configuration default="false" name="school-course-service" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
     <deployment type="dockerfile">
       <settings>
-        <option name="imageTag" value="course-service:latest" />
+        <option name="imageTag" value="school-course-service:latest" />
         <option name="containerName" value="course-service" />
         <option name="envVars">
           <list>
@@ -12,7 +12,7 @@
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
               <option name="name" value="SPRING_DATASOURCE_URL" />
-              <option name="value" value="jdbc:postgresql://course-service-db:5432/thecoursedb" />
+              <option name="value" value="jdbc:postgresql://school-course-service-db:5432/thecoursedb" />
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
               <option name="name" value="SPRING_DATASOURCE_USERNAME" />
@@ -37,7 +37,7 @@
           </list>
         </option>
         <option name="commandLineOptions" value="--network scm" />
-        <option name="sourceFilePath" value="courses-service/Dockerfile" />
+        <option name="sourceFilePath" value="school-course-service/Dockerfile" />
       </settings>
     </deployment>
     <method v="2" />

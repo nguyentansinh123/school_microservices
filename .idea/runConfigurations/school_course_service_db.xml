@@ -1,9 +1,9 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="course-service-db" type="docker-deploy" factoryName="docker-image" server-name="Docker">
+  <configuration default="false" name="school-course-service-db" type="docker-deploy" factoryName="docker-image" server-name="Docker">
     <deployment type="docker-image">
       <settings>
         <option name="imageTag" value="postgres:latest" />
-        <option name="containerName" value="course-service-db" />
+        <option name="containerName" value="school-course-service-db" />
         <option name="envVars">
           <list>
             <DockerEnvVarImpl>
