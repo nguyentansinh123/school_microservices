@@ -1,13 +1,13 @@
-package com.caffein.courseservice;
+package com.caffein.schoolcourseservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CourseServiceApplication {
+public class SchoolCourseServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CourseServiceApplication.class, args);
+        SpringApplication.run(SchoolCourseServiceApplication.class, args);
     }
 
 }

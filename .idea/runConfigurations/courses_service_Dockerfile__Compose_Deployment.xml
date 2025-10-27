@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="course-service" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+  <configuration default="false" name="courses-service/Dockerfile: Compose Deployment" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
     <deployment type="dockerfile">
       <settings>
         <option name="imageTag" value="course-service:latest" />
@@ -37,7 +37,7 @@
           </list>
         </option>
         <option name="commandLineOptions" value="--network scm" />
-        <option name="sourceFilePath" value="course-service/Dockerfile" />
+        <option name="sourceFilePath" value="courses-service/Dockerfile" />
       </settings>
     </deployment>
     <method v="2" />
