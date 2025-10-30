@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package courseserviceinformation;
+
+option java_multiple_files = true;
+option java_package = "com.caffein.schoolcourseservice.grpc";
+option java_outer_classname = "CourseProto";
+
+import "google/protobuf/wrappers.proto";
+
+// The service definition for fetching course and subject information
+service CourseInformationService {
+  // Gets a single course by its ID
+  rpc GetCourseById(CourseRequest) returns (CourseResponse);
+  // Streams a list of all available courses, optionally filtered by term
+  rpc GetAvailableCourses(CoursesRequest) returns (stream CourseResponse);
+  // Streams a list of all subjects
+  rpc GetSubjects(SubjectsRequest) returns (stream SubjectResponse);
+}
+
+// Request for a single course
+message CourseRequest {
+  string courseId = 1;
+}
+
+// Request for a list of courses, with optional filters
+message CoursesRequest {
+  google.protobuf.StringValue academicYear = 1;
+  google.protobuf.StringValue semester = 2;
+}
+
+// Request for a list of subjects
+message SubjectsRequest {
+  // No parameters needed for now, but can be added later for filtering
+}
+
+message CourseResponse {
+  string id = 1;
+  string name = 2;
+  string academicYear = 3;
+  string semester = 4;
+  int32 maxCapacity = 5;
+  SubjectResponse subject = 6;
+  TeacherResponse teacher = 7;
+  repeated ScheduleResponse schedules = 8;
+}
+
+// Response containing subject details
+message SubjectResponse {
+  string id = 1;
+  string name = 2;
+  string department = 3;
+}
+
+// Nested message for teacher details
+message TeacherResponse {
+  string id = 1;
+  string firstName = 2;
+  string lastName = 3;
+}
+
+// Nested message for schedule details
+message ScheduleResponse {
+  string dayOfWeek = 1;
+  string startTime = 2;
+  string endTime = 3;
+  string roomNumber = 4;
+}
