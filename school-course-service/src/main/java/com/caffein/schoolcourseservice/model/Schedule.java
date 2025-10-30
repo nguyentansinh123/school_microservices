@@ -22,8 +22,8 @@ public class Schedule {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_id", nullable = false)
-    private Subject subject;
+    @JoinColumn(name = "course_id", nullable = false)
+    private Course course;
 
     @Column(name = "day_of_week", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -37,10 +37,4 @@ public class Schedule {
 
     @Column(name = "room_number")
     private String roomNumber;
-
-    @Column(name = "academic_year")
-    private String academicYear;
-
-    @Column(name = "semester")
-    private String semester;
 }

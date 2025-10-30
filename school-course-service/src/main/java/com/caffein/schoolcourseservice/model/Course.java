@@ -9,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -43,11 +45,12 @@ public class Course {
     @Column(name = "semester", nullable = false)
     private String semester;
 
-    @Column(name = "room_number")
-    private String roomNumber;
-
     @Column(name = "max_capacity", nullable = false)
     private Integer maxCapacity;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Schedule> schedules = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

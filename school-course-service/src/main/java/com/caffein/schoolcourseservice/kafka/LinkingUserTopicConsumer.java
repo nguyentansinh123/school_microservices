@@ -1,7 +1,7 @@
 package com.caffein.schoolcourseservice.kafka;
 
-import com.caffein.schoolcourseservice.dto.RoleDTO;
-import com.caffein.schoolcourseservice.dto.UserDTO;
+import com.caffein.schoolcourseservice.dto.user.RoleDTO;
+import com.caffein.schoolcourseservice.dto.user.UserDTO;
 import com.caffein.schoolcourseservice.service.teacherService.ITeacherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

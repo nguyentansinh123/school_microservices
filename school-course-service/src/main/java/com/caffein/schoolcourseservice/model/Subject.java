@@ -36,5 +36,5 @@ public class Subject {
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Schedule> schedules = new ArrayList<>();
+    private List<Course> courses = new ArrayList<>();
 }

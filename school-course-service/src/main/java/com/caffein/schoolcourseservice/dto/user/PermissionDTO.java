@@ -1,4 +1,4 @@
-package com.caffein.schoolcourseservice.dto;
+package com.caffein.schoolcourseservice.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
