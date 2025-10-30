@@ -1,6 +1,7 @@
 package com.caffein.schoolcourseservice.dto.course.mapper;
 
 import com.caffein.schoolcourseservice.dto.course.CourseDTO;
+import com.caffein.schoolcourseservice.dto.schedule.mapper.ScheduleMapper;
 import com.caffein.schoolcourseservice.dto.subject.mapper.SubjectMapper;
 import com.caffein.schoolcourseservice.dto.teacher.mapper.TeacherMapper;
 import com.caffein.schoolcourseservice.model.Course;
