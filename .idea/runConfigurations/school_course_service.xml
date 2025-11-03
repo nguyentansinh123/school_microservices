@@ -38,6 +38,10 @@
               <option name="containerPort" value="8080" />
               <option name="hostPort" value="4003" />
             </DockerPortBindingImpl>
+            <DockerPortBindingImpl>
+              <option name="containerPort" value="4312" />
+              <option name="hostPort" value="4312" />
+            </DockerPortBindingImpl>
           </list>
         </option>
         <option name="commandLineOptions" value="--network scm" />
