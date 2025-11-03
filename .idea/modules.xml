@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/school-course-service/school-course-service.iml" filepath="$PROJECT_DIR$/school-course-service/school-course-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/school_management.iml" filepath="$PROJECT_DIR$/school_management.iml" />
+      <module fileurl="file://$PROJECT_DIR$/student-service/student-service.iml" filepath="$PROJECT_DIR$/student-service/student-service.iml" />
     </modules>
   </component>
 </project>

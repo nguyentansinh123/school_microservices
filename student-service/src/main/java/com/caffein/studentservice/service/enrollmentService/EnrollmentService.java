@@ -1,30 +1,57 @@
 package com.caffein.studentservice.service.enrollmentService;
 
 import com.caffein.studentservice.dto.EnrollmentDTO;
+import com.caffein.studentservice.dto.SubjectDTO;
+import com.caffein.studentservice.grpc.CourseInformationServiceGrpc;
 import com.caffein.studentservice.model.Enrollment;
 import com.caffein.studentservice.model.Student;
 import com.caffein.studentservice.repository.EnrollmentRepository;
 import com.caffein.studentservice.repository.StudentRepository;
 import com.caffein.studentservice.request.EnrollmentRequest;
 import com.caffein.studentservice.service.enrollmentService.mapper.EnrollmentMapper;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.grpc.client.GrpcChannelFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class EnrollmentService implements IEnrollmentService {
 
     private final EnrollmentRepository enrollmentRepository;
     private final StudentRepository studentRepository;
     private final EnrollmentMapper enrollmentMapper;
+
+    private final CourseInformationServiceGrpc.CourseInformationServiceBlockingStub courseInformationServiceBlockingStub;
+
+    public EnrollmentService(
+            EnrollmentRepository enrollmentRepository,
+            StudentRepository studentRepository,
+            EnrollmentMapper enrollmentMapper,
+            @Value("${school.course.service.address:localhost}") String serverAddress,
+            @Value("${school.course.service.grpc.port:4312}") int serverPort) {
+        this.enrollmentRepository = enrollmentRepository;
+        this.studentRepository = studentRepository;
+        this.enrollmentMapper = enrollmentMapper;
+
+        log.info("Connecting to School Course Service GRPC at {}:{}", serverAddress, serverPort);
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(serverAddress, serverPort)
+                .usePlaintext()
+                .build();
+        this.courseInformationServiceBlockingStub = CourseInformationServiceGrpc.newBlockingStub(channel);
+    }
 
     @Override
     @Transactional
@@ -42,20 +69,36 @@ public class EnrollmentService implements IEnrollmentService {
             throw new IllegalStateException("Student is already enrolled in this course");
         }
 
-        Enrollment enrollment = Enrollment.builder()
-                .student(student)
-                .courseId(request.getCourseId())
-                .courseCode(request.getCourseCode())
-                .courseName(request.getCourseName())
-                .academicYear(request.getAcademicYear())
-                .semester(request.getSemester())
-                .status(Enrollment.EnrollmentStatus.REGISTERED)
-                .build();
+        try {
+            com.caffein.studentservice.grpc.CourseResponse courseResponse = courseInformationServiceBlockingStub.getCourseById(
+                    com.caffein.studentservice.grpc.CourseRequest.newBuilder().setCourseId(request.getCourseId().toString()).build()
+            );
 
-        Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
-        log.info("Successfully enrolled student {} in course {}", student.getId(), request.getCourseId());
+            long currentEnrollmentCount = enrollmentRepository.countByCourseId(request.getCourseId());
+            if (currentEnrollmentCount >= courseResponse.getMaxCapacity()) {
+                throw new IllegalStateException("Course has reached its maximum capacity");
+            }
 
-        return enrollmentMapper.toDTO(savedEnrollment);
+            String courseCode = courseResponse.hasSubject() ? courseResponse.getSubject().getName() : "N/A";
+
+            Enrollment enrollment = Enrollment.builder()
+                    .student(student)
+                    .courseId(request.getCourseId())
+                    .courseCode(courseCode)
+                    .courseName(courseResponse.getName())
+                    .academicYear(courseResponse.getAcademicYear())
+                    .semester(courseResponse.getSemester())
+                    .status(Enrollment.EnrollmentStatus.REGISTERED)
+                    .build();
+
+            Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
+            log.info("Successfully enrolled student {} in course {}", student.getId(), request.getCourseId());
+
+            return enrollmentMapper.toDTO(savedEnrollment);
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC error while fetching course info for courseId {}: {}", request.getCourseId(), e.getStatus());
+            throw new IllegalStateException("Failed to retrieve course information. Please try again later.", e);
+        }
     }
 
 
@@ -97,5 +140,28 @@ public class EnrollmentService implements IEnrollmentService {
         return enrollments.stream()
                 .map(enrollmentMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SubjectDTO> getAllSubjects() {
+        log.info("Fetching all subjects from course service");
+        try {
+            Iterator<com.caffein.studentservice.grpc.SubjectResponse> responseIterator =
+                    courseInformationServiceBlockingStub.getSubjects(com.caffein.studentservice.grpc.SubjectsRequest.newBuilder().build());
+
+            List<SubjectDTO> subjects = new ArrayList<>();
+            while (responseIterator.hasNext()) {
+                com.caffein.studentservice.grpc.SubjectResponse subjectResponse = responseIterator.next();
+                subjects.add(SubjectDTO.builder()
+                        .id(UUID.fromString(subjectResponse.getId()))
+                        .name(subjectResponse.getName())
+                        .department(subjectResponse.getDepartment())
+                        .build());
+            }
+            return subjects;
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC error while fetching subjects: {}", e.getStatus());
+            throw new IllegalStateException("Failed to retrieve subjects. Please try again later.", e);
+        }
     }
 }

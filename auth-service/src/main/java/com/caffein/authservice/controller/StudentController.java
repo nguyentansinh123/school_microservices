@@ -26,8 +26,16 @@ public class StudentController {
 
     @PostMapping("/admin/register-teacher")
     @PreAuthorize("hasAuthority('admin:write')")
-    public ResponseEntity<Void> registerStudent(@Valid @RequestBody final RegistrationRequest request) {
+    public ResponseEntity<Void> registerTeacher(@Valid @RequestBody final RegistrationRequest request) {
         User user = this.service.registerANewTeacher(request);
+        userProducer.authToStudentTopic("pushUserFromAuthServiceToStudentServiceTopic", user);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/admin/register-student")
+    @PreAuthorize("hasAuthority('admin:write')")
+    public ResponseEntity<Void> registerStudent(@Valid @RequestBody final RegistrationRequest request) {
+        User user = this.service.registerANewStudent(request);
         userProducer.authToStudentTopic("pushUserFromAuthServiceToStudentServiceTopic", user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

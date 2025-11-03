@@ -1,6 +1,7 @@
 package com.caffein.studentservice.controller;
 
 import com.caffein.studentservice.dto.EnrollmentDTO;
+import com.caffein.studentservice.dto.SubjectDTO;
 import com.caffein.studentservice.request.EnrollmentRequest;
 import com.caffein.studentservice.service.enrollmentService.IEnrollmentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,5 +44,12 @@ public class EnrollmentController {
     public ResponseEntity<List<EnrollmentDTO>> getStudentEnrollments(@PathVariable UUID studentId) {
         List<EnrollmentDTO> enrollments = enrollmentService.getStudentEnrollments(studentId);
         return ResponseEntity.ok(enrollments);
+    }
+
+    @GetMapping("/subjects")
+    @Operation(summary = "Get all available subjects")
+    public ResponseEntity<List<SubjectDTO>> getAllSubjects() {
+        List<SubjectDTO> subjects = enrollmentService.getAllSubjects();
+        return ResponseEntity.ok(subjects);
     }
 }
