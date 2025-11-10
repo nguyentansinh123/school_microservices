@@ -7,12 +7,12 @@
         <option name="envVars">
           <list>
             <DockerEnvVarImpl>
-              <option name="name" value="GRPC_CLIENT_COURSEINFOSERVICE_ADDRESS" />
-              <option name="value" value="static://course-service:4312" />
+              <option name="name" value="SCHOOL_COURSE_SERVICE_ADDRESS" />
+              <option name="value" value="school-course-service" />
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
-              <option name="name" value="GRPC_CLIENT_COURSEINFOSERVICE_NEGOTIATIONTYPE" />
-              <option name="value" value="PLAINTEXT" />
+              <option name="name" value="BILLING_SERVICE_GRPC_PORT" />
+              <option name="value" value="4312" />
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
               <option name="name" value="SPRING_DATASOURCE_PASSWORD" />

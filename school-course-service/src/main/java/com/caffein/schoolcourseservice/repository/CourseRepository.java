@@ -1,6 +1,8 @@
 package com.caffein.schoolcourseservice.repository;
 
 import com.caffein.schoolcourseservice.model.Course;
+import com.caffein.schoolcourseservice.model.Subject;
+import com.caffein.schoolcourseservice.model.Teacher;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -33,4 +35,6 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
             @Param("academicYear") String academicYear,
             @Param("semester") String semester
     );
+
+    Optional<Course> findByNameAndSubjectAndTeacher(String name, Subject subject, Teacher teacher);
 }
