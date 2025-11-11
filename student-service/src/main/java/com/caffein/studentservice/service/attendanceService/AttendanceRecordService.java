@@ -14,6 +14,7 @@ import com.caffein.studentservice.service.emailService.EmailService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,7 @@ public class AttendanceRecordService implements IAttendanceRecordService {
     private final EnrollmentRepository enrollmentRepository;
     private final AttendanceRecordMapper attendanceRecordMapper;
     private final EmailService emailService;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
     private static final int ABSENCE_WARNING_THRESHOLD = 3;
@@ -87,6 +89,8 @@ public class AttendanceRecordService implements IAttendanceRecordService {
             sendAbsenceNotification(student, enrollment, createDTO.getDate());
             checkMultipleAbsences(student, createDTO.getCourseId(), enrollment.getCourseName());
         }
+
+        publishAttendanceEvent(savedRecord);
 
         return attendanceRecordMapper.toDTO(savedRecord);
     }
@@ -262,5 +266,17 @@ public class AttendanceRecordService implements IAttendanceRecordService {
             log.error("Failed to check multiple absences for student {}: {}", 
                     student.getId(), e.getMessage());
         }
+    }
+
+    private void publishAttendanceEvent(AttendanceRecord record) {
+        Map<String, Object> event = Map.of(
+            "attendanceId", record.getId(),
+            "studentId", record.getStudent().getId(),
+            "courseId", record.getCourseId(),
+            "courseName", record.getEnrollment().getCourseName(),
+            "date", record.getDate(),
+            "status", record.getStatus().name()
+        );
+        kafkaTemplate.send("attendance-events", event);
     }
 }
