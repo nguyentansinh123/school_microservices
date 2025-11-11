@@ -9,6 +9,7 @@ spring:
       server:
         webflux:
           routes:
+            # Auth Service - Public endpoints
             - id: auth-service
               uri: ${AUTH_SERVICE_URL:http://localhost:4000}
               predicates:
@@ -16,9 +17,58 @@ spring:
               filters:
                 - RewritePath=/(?<segment>.*), /api/v1/$\{segment}
 
+            # Student Service - Protected endpoints
             - id: student-service
               uri: ${STUDENT_SERVICE_URL:http://localhost:4001}
               predicates:
                 - Path=/api/v1/ss/**
               filters:
                 - JwtValidation
+
+            # School Course Service - Protected endpoints
+            - id: school-course-service
+              uri: ${SCHOOL_COURSE_SERVICE_URL:http://localhost:4003}
+              predicates:
+                - Path=/api/v1/cs/**
+              filters:
+                - JwtValidation
+
+            # Analytics Service - Protected endpoints
+            - id: analytics-service
+              uri: ${ANALYTICS_SERVICE_URL:http://localhost:4010}
+              predicates:
+                - Path=/api/v1/analytics/**
+              filters:
+                - JwtValidation
+
+            # Shorter route for course-related operations
+            - id: courses-shorthand
+              uri: ${SCHOOL_COURSE_SERVICE_URL:http://localhost:4003}
+              predicates:
+                - Path=/courses/**, /subjects/**, /teachers/**, /schedules/**
+              filters:
+                - RewritePath=/(?<segment>.*), /api/v1/cs/$\{segment}
+                - JwtValidation
+
+            # Shorter route for student-related operations
+            - id: students-shorthand
+              uri: ${STUDENT_SERVICE_URL:http://localhost:4001}
+              predicates:
+                - Path=/students/**, /enrollments/**, /attendance/**, /guardians/**
+              filters:
+                - RewritePath=/(?<segment>.*), /api/v1/ss/$\{segment}
+                - JwtValidation
+
+            # Analytics shortcuts
+            - id: analytics-shorthand
+              uri: ${ANALYTICS_SERVICE_URL:http://localhost:4010}
+              predicates:
+                - Path=/analytics/**
+              filters:
+                - RewritePath=/analytics/(?<segment>.*), /api/v1/analytics/$\{segment}
+                - JwtValidation
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: DEBUG
