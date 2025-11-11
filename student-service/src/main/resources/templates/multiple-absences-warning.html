@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .warning-box {
+            background-color: #fff5f5;
+            border: 2px solid #fc8181;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .warning-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+        }
+        .stat-box {
+            text-align: center;
+            padding: 20px;
+            background-color: #f7fafc;
+            border-radius: 8px;
+            flex: 1;
+            margin: 0 10px;
+        }
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #e53e3e;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #718096;
+            margin-top: 5px;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <div class="header">
+        <h1>⚠️ Attendance Warning</h1>
+    </div>
+
+    <div class="content">
+        <p style="font-size: 18px;">Dear <strong th:text="${studentName}">Student Name</strong>,</p>
+
+        <div class="warning-box">
+            <div class="warning-icon">⚠️</div>
+            <h2 style="color: #c53030; margin: 10px 0;">Multiple Absences Detected</h2>
+            <p style="color: #742a2a; margin: 10px 0;">
+                You have accumulated multiple absences in <strong th:text="${courseName}">Course Name</strong>
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-number" th:text="${absentCount}">5</div>
+                <div class="stat-label">Total Absences</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" th:text="${totalClasses}">20</div>
+                <div class="stat-label">Total Classes</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" th:text="${attendanceRate} + '%'">75%</div>
+                <div class="stat-label">Attendance Rate</div>
+            </div>
+        </div>
+
+        <div style="background-color: #fef5e7; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #f39c12; margin-top: 0;">📢 Important Actions Required:</h3>
+            <ul style="color: #7d6608;">
+                <li>Meet with your academic advisor to discuss your attendance</li>
+                <li>Review the course attendance policy</li>
+                <li>Contact your instructor to discuss make-up work if applicable</li>
+                <li>Improve your attendance immediately to avoid academic consequences</li>
+            </ul>
+        </div>
+
+        <p style="color: #e53e3e; font-weight: 600; text-align: center; font-size: 16px;">
+            Continued absences may result in grade penalties or course failure.
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>© 2024 School Management System - Academic Affairs Office</p>
+    </div>
+</div>
+</body>
+</html>

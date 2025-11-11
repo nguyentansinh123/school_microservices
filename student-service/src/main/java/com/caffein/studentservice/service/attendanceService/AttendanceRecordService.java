@@ -1,6 +1,5 @@
 package com.caffein.studentservice.service.attendanceService;
 
-
 import com.caffein.studentservice.dto.AttendanceRecordCreateDTO;
 import com.caffein.studentservice.dto.AttendanceRecordDTO;
 import com.caffein.studentservice.dto.AttendanceRecordUpdateDTO;
@@ -11,6 +10,7 @@ import com.caffein.studentservice.repository.AttendanceRecordRepository;
 import com.caffein.studentservice.repository.EnrollmentRepository;
 import com.caffein.studentservice.repository.StudentRepository;
 import com.caffein.studentservice.service.attendanceService.mapper.AttendanceRecordMapper;
+import com.caffein.studentservice.service.emailService.EmailService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,11 +34,15 @@ public class AttendanceRecordService implements IAttendanceRecordService {
     private final StudentRepository studentRepository;
     private final EnrollmentRepository enrollmentRepository;
     private final AttendanceRecordMapper attendanceRecordMapper;
+    private final EmailService emailService;
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
+    private static final int ABSENCE_WARNING_THRESHOLD = 3;
 
     @Override
     @Transactional
     public AttendanceRecordDTO recordAttendance(AttendanceRecordCreateDTO createDTO) {
-        log.info("Recording attendance for student {} in course {} on {}",
+        log.info("Recording attendance for student {} in course {} on {}", 
                 createDTO.getStudentId(), createDTO.getCourseId(), createDTO.getDate());
 
         // Validate student exists
@@ -74,8 +79,14 @@ public class AttendanceRecordService implements IAttendanceRecordService {
                 .build();
 
         AttendanceRecord savedRecord = attendanceRecordRepository.save(record);
-        log.info("Successfully recorded attendance for student {} - Status: {}",
+        log.info("Successfully recorded attendance for student {} - Status: {}", 
                 student.getId(), createDTO.getStatus());
+
+        // Send email notification if student is absent
+        if (createDTO.getStatus() == AttendanceRecord.AttendanceStatus.ABSENT) {
+            sendAbsenceNotification(student, enrollment, createDTO.getDate());
+            checkMultipleAbsences(student, createDTO.getCourseId(), enrollment.getCourseName());
+        }
 
         return attendanceRecordMapper.toDTO(savedRecord);
     }
@@ -88,11 +99,19 @@ public class AttendanceRecordService implements IAttendanceRecordService {
         AttendanceRecord record = attendanceRecordRepository.findById(recordId)
                 .orElseThrow(() -> new EntityNotFoundException("Attendance record not found with ID: " + recordId));
 
+        AttendanceRecord.AttendanceStatus previousStatus = record.getStatus();
         record.setStatus(updateDTO.getStatus());
         record.setRemarks(updateDTO.getRemarks());
 
         AttendanceRecord updatedRecord = attendanceRecordRepository.save(record);
         log.info("Successfully updated attendance record {} - New status: {}", recordId, updateDTO.getStatus());
+
+        // Send notification if status changed to ABSENT
+        if (previousStatus != AttendanceRecord.AttendanceStatus.ABSENT && 
+            updateDTO.getStatus() == AttendanceRecord.AttendanceStatus.ABSENT) {
+            sendAbsenceNotification(record.getStudent(), record.getEnrollment(), record.getDate());
+            checkMultipleAbsences(record.getStudent(), record.getCourseId(), record.getEnrollment().getCourseName());
+        }
 
         return attendanceRecordMapper.toDTO(updatedRecord);
     }
@@ -186,16 +205,16 @@ public class AttendanceRecordService implements IAttendanceRecordService {
         }
 
         Map<String, Long> statistics = new HashMap<>();
-
+        
         statistics.put("present", attendanceRecordRepository.countByStudentIdAndCourseIdAndStatus(
                 studentId, courseId, AttendanceRecord.AttendanceStatus.PRESENT));
-
+        
         statistics.put("absent", attendanceRecordRepository.countByStudentIdAndCourseIdAndStatus(
                 studentId, courseId, AttendanceRecord.AttendanceStatus.ABSENT));
-
+        
         statistics.put("late", attendanceRecordRepository.countByStudentIdAndCourseIdAndStatus(
                 studentId, courseId, AttendanceRecord.AttendanceStatus.LATE));
-
+        
         statistics.put("excused", attendanceRecordRepository.countByStudentIdAndCourseIdAndStatus(
                 studentId, courseId, AttendanceRecord.AttendanceStatus.EXCUSED));
 
@@ -210,5 +229,38 @@ public class AttendanceRecordService implements IAttendanceRecordService {
         }
 
         return statistics;
+    }
+
+    private void sendAbsenceNotification(Student student, Enrollment enrollment, LocalDate date) {
+        try {
+            String formattedDate = date.format(DATE_FORMATTER);
+            emailService.sendAbsenceNotification(
+                    student,
+                    enrollment.getCourseName(),
+                    enrollment.getCourseCode(),
+                    AttendanceRecord.AttendanceStatus.ABSENT,
+                    formattedDate
+            );
+        } catch (Exception e) {
+            log.error("Failed to send absence notification for student {}: {}", 
+                    student.getId(), e.getMessage());
+        }
+    }
+
+    private void checkMultipleAbsences(Student student, UUID courseId, String courseName) {
+        try {
+            long absentCount = attendanceRecordRepository.countByStudentIdAndCourseIdAndStatus(
+                    student.getId(), courseId, AttendanceRecord.AttendanceStatus.ABSENT);
+
+            if (absentCount >= ABSENCE_WARNING_THRESHOLD) {
+                long totalClasses = attendanceRecordRepository.findByStudentIdAndCourseId(
+                        student.getId(), courseId).size();
+
+                emailService.sendMultipleAbsencesWarning(student, courseName, absentCount, totalClasses);
+            }
+        } catch (Exception e) {
+            log.error("Failed to check multiple absences for student {}: {}", 
+                    student.getId(), e.getMessage());
+        }
     }
 }
