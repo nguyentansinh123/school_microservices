@@ -1,5 +1,3 @@
-Here is a professional and comprehensive README.md for your project, designed to highlight your technical expertise to recruiters and engineers.
-
 School Microservices Management System
 A robust, distributed educational management platform built with Java 21 and Spring Boot 3.5. This project demonstrates a modern microservices architecture designed for scalability, high-performance inter-service communication, and event-driven data processing.
 
